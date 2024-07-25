@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Transaction>
@@ -21,7 +22,7 @@ class TransactionFactory extends Factory
     {
         return [
             'wallet_id' => function () {
-                return \App\Models\Wallet::factory()->create()->id;
+                return \App\Models\Wallet::query()->inRandomOrder()->first()->id;
             },
             'type' => $this->faker->randomElement(['income', 'expense']),
             'amount' => $this->faker->randomFloat(2, 0, 10000),

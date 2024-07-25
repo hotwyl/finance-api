@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('user_id');
             $table->string('name');
-            $table->decimal('balance', 10, 2)->default(0);
+//            $table->decimal('balance', 10, 2)->default(0);
             $table->softDeletes();
             $table->timestamps();
 

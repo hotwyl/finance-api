@@ -21,10 +21,9 @@ class WalletFactory extends Factory
     {
         return [
             'user_id' => function () {
-                return \App\Models\User::factory()->create()->id;
+                return \App\Models\User::query()->inRandomOrder()->first()->id;
             },
             'name' => $this->faker->word,
-            'balance' => $this->faker->randomFloat(2, 0, 10000),
         ];
     }
 }

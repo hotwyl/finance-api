@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateWalletRequest extends FormRequest
+class WalletUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,7 @@ class UpdateWalletRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'exists:users,id',
             'name' => 'string|max:255',
-            'balance' => 'numeric|between:0,999999.99',
         ];
     }
 
@@ -36,11 +34,8 @@ class UpdateWalletRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.exists' => 'O campo user_id deve ser um usuário existente.',
             'name.string' => 'O campo name deve ser uma string.',
             'name.max' => 'O campo name deve ter no máximo 255 caracteres.',
-            'balance.numeric' => 'O campo balance deve ser um número.',
-            'balance.between' => 'O campo balance deve estar entre 0 e 999999.99.',
         ];
     }
 }

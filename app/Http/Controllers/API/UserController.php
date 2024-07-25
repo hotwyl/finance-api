@@ -5,8 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 
 class UserController extends Controller
@@ -17,7 +17,7 @@ class UserController extends Controller
         return UserResource::collection($users);
     }
 
-    public function store(StoreUserRequest $request)
+    public function store(UserStoreRequest $request)
     {
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']); // Criptografa a senha
@@ -32,7 +32,7 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
         $data = $request->validated();
 
@@ -49,7 +49,7 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return response()->json(null, 204);
+        return UserResource::collection(null, 204);
     }
 
 }

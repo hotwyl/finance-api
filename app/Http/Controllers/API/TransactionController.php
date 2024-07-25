@@ -5,19 +5,24 @@ namespace App\Http\Controllers\API;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
+use App\Http\Requests\TransactionStoreRequest;
+use App\Http\Requests\TransactionUpdateRequest;
 use App\Http\Resources\TransactionResource;
 
 class TransactionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         $transactions = Transaction::all();
         return TransactionResource::collection($transactions);
     }
 
-    public function store(StoreTransactionRequest $request)
+    public function store(TransactionStoreRequest $request)
     {
         // Lógica para criar uma nova carteira
         $transaction = Transaction::create($request->validated());
@@ -30,7 +35,7 @@ class TransactionController extends Controller
         return new TransactionResource($transaction);
     }
 
-    public function update(UpdateTransactionRequest $request, Transaction $transaction)
+    public function update(TransactionUpdateRequest $request, Transaction $transaction)
     {
         // Lógica para atualizar a carteira
         $transaction->update($request->validated());

@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Ramsey\Uuid\Uuid;
 
 class Transaction extends Model
 {
-    use HasFactory, SoftDeletes;
-
+    use HasFactory, HasApiTokens, Notifiable, SoftDeletes, hasUuids;
     protected $keyType = 'string'; // Define o tipo da chave primária como string
     public $incrementing = false; // Desabilita a auto-incrementação para UUIDs
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'wallet_id', 'type', 'amount', 'description',
