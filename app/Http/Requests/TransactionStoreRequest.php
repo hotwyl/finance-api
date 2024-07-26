@@ -22,10 +22,17 @@ class TransactionStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'wallet_id' => 'required|exists:wallets,id',
-            'type' => 'required|in:income,expense',
+            'wallet_id' => 'nullable|exists:wallets,id',
+            'type' => 'required|in:entrada,saida',
+            'description' => 'nullable|in:salário,investimento,extra,financiamento,emprestimo,aluguel,luz,agua,internet,alimentação,transporte,educação,lazer,vestuario,poupança,outros',
             'amount' => 'required|numeric|between:0,999999.99',
-            'description' => 'nullable|string|max:255',
+            'status' => 'nullable|in:pendente,pago,cancelado',
+            'recurrence' => 'nullable|boolean',
+            'period' => 'nullable|in:diario,semanal,quinzenal,mensal,bimestral,trimestral,semestral,anual',
+            'installments' => 'nullable|integer',
+            'due_date' => 'required|date',
+            'payment_date' => 'nullable|date',
+            'annotation' => 'nullable|string|max:255',
         ];
     }
 
@@ -37,15 +44,22 @@ class TransactionStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'wallet_id.required' => 'Wallet is required',
-            'wallet_id.exists' => 'Wallet does not exist',
-            'type.required' => 'Type is required',
-            'type.in' => 'Type must be either income or expense',
-            'amount.required' => 'Amount is required',
-            'amount.numeric' => 'Amount must be a number',
-            'amount.between' => 'Amount must be between 0 and 999999.99',
-            'description.string' => 'Description must be a string',
-            'description.max' => 'Description must not exceed 255 characters',
+            'wallet_id.exists' => 'A carteira informada não existe',
+            'type.required' => 'O campo tipo é obrigatório',
+            'type.in' => 'O campo tipo deve ser entrada ou saida',
+            'description.in' => 'O campo descrição deve ser salário, investimento, extra, financiamento, emprestimo, aluguel, luz, agua, internet, alimentação, transporte, educação, lazer, vestuario, poupança ou outros',
+            'amount.required' => 'O campo valor é obrigatório',
+            'amount.numeric' => 'O campo valor deve ser um número',
+            'amount.between' => 'O campo valor deve ser entre 0 e 999999.99',
+            'status.in' => 'O campo status deve ser pendente, pago ou cancelado',
+            'recurrence.boolean' => 'O campo recorrência deve ser um booleano',
+            'period.in' => 'O campo período deve ser diario, semanal, quinzenal, mensal, bimestral, trimestral, semestral ou anual',
+            'installments.integer' => 'O campo parcelas deve ser um número inteiro',
+            'due_date.required' => 'O campo data de vencimento é obrigatório',
+            'due_date.date' => 'O campo data de vencimento deve ser uma data',
+            'payment_date.date' => 'O campo data de pagamento deve ser uma data',
+            'annotation.string' => 'O campo anotação deve ser uma string',
+            'annotation.max' => 'O campo anotação deve ter no máximo 255 caracteres',
         ];
     }
 }

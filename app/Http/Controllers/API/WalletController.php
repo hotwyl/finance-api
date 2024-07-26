@@ -126,6 +126,7 @@ class WalletController extends Controller
                 'message' => 'Carteira criada com sucesso',
                 'content' => $wallet
             ], 201);
+            
         } catch (\Exception $e) {
             return WalletResource::make([
                 'status' => false,

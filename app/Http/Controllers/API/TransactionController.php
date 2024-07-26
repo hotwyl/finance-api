@@ -83,7 +83,7 @@ class TransactionController extends Controller
     public function show($transaction) : TransactionResource
     {
         // Lógica para retornar uma transação específica da carteira especificada
-        $transaction = Transaction::find($transaction)->whereIn('wallet_id', WALLETS->pluck('id'))->first();
+        $transaction = Transaction::where('id', $transaction)->whereIn('wallet_id', WALLETS->pluck('id')->toArray())->first();
 
         // Retornar transação não encontrada
         if(!$transaction) {
@@ -102,26 +102,91 @@ class TransactionController extends Controller
         ], 200);
     }
 
-    public function store(TransactionStoreRequest $request)
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param TransactionStoreRequest $request
+     * @return TransactionResource
+     */
+    public function store(TransactionStoreRequest $request) : TransactionResource
     {
-        // Lógica para criar uma nova carteira
-        $transaction = Transaction::create($request->validated());
+        $carteira = (in_array($request->input('wallet_id'), WALLETS->pluck('id')->toArray())) ?  $request->input('wallet_id') : WALLETS->pluck('id')->first();
 
-        return TransactionResource($transaction);
+        if (!$carteira) {
+            return TransactionResource::make([
+                'status' => false,
+                'message' => 'Nenhuma carteira encontrada',
+                'content' => null
+            ], 404);
+        }
+
+        try {
+            // Lógica para criar uma nova carteira
+            $newTransaction = $request->validated();
+            $newTransaction['wallet_id'] =  $carteira;
+
+            // Lógica para criar uma nova transação
+            $transaction = Transaction::create($newTransaction);
+
+            return TransactionResource::make([
+                'status' => true,
+                'message' => 'Transação criada com sucesso',
+                'content' => $transaction
+            ], 201);
+
+        } catch (\Exception $e) {
+            return TransactionResource::make([
+                'status' => false,
+                'message' => 'Erro ao criar transação',
+                'content' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function update(TransactionUpdateRequest $request, Transaction $transaction)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param TransactionUpdateRequest $request
+     * @param $transaction
+     * @return TransactionResource
+     */
+    public function update(TransactionUpdateRequest $request, $transaction) : TransactionResource
     {
-        // Lógica para atualizar a carteira
-        $transaction->update($request->validated());
+        // Lógica para retornar uma transação específica da carteira especificada
+        $transaction = Transaction::where('id', $transaction)->whereIn('wallet_id', WALLETS->pluck('id'))->first();
 
-        return new TransactionResource($transaction);
+        // Retornar transação não encontrada
+        if(!$transaction) {
+            return TransactionResource::make([
+                'status' => false,
+                'message' => 'Transação não encontrada',
+                'content' => null
+            ], 404);
+        }
+
+        try {
+            // Lógica para atualizar a carteira
+            $transaction->update($request->validated());
+
+            // Retornar a carteira atualizada
+            return TransactionResource::make([
+                'status' => true,
+                'message' => 'Transação atualizada com sucesso',
+                'content' => $transaction
+            ], 200);
+        } catch (\Exception $e) {
+            return TransactionResource::make([
+                'status' => false,
+                'message' => 'Erro ao atualizar transação',
+                'content' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy($transaction)
     {
         // Lógica para retornar uma transação específica da carteira especificada
-        $transaction = Transaction::find($transaction)->whereIn('wallet_id', WALLETS->pluck('id'))->first();
+        $transaction = Transaction::where('id', $transaction)->whereIn('wallet_id', WALLETS->pluck('id'))->first();
 
         // Retornar transação não encontrada
         if(!$transaction) {
