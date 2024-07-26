@@ -42,11 +42,11 @@ class WalletController extends Controller
         $wallets = Auth::user()->wallets;
 
         // Retornar todas as transações da carteira especificada
-        if ($wallets->count() == 0) {
+        if ($wallets->count() === 0) {
             return WalletResource::make([
                 'status' => false,
                 'message' => 'Nenhuma carteira encontrada',
-                'wallets' => null
+                'content' => null
             ], 404);
         }
 
@@ -54,7 +54,7 @@ class WalletController extends Controller
         return WalletResource::make([
             'status' => true,
             'message' => 'Carteiras encontradas',
-            'wallets' => $wallets
+            'content' => $wallets
         ], 200);
     }
 
@@ -70,11 +70,11 @@ class WalletController extends Controller
         $wallet = Auth::user()->wallets->where('user_id', USER_ID)->where('id',$wallet)->first();
 
         // Retornar carteira não encontrada
-        if(!$wallet || $wallet->user_id !== USER_ID) {
+        if(!$wallet) {
             return WalletResource::make([
                 'status' => false,
                 'message' => 'Carteira não encontrada',
-                'wallet' => null
+                'content' => null
             ], 404);
         }
 
@@ -82,7 +82,7 @@ class WalletController extends Controller
         return WalletResource::make([
             'status' => true,
             'message' => 'Carteira encontrada',
-            'wallet' => $wallet
+            'content' => $wallet
         ], 200);
     }
 
@@ -99,7 +99,7 @@ class WalletController extends Controller
             return WalletResource::make([
                 'status' => false,
                 'message' => 'Você já possui o limite de 1 carteiras',
-                'wallet' => null
+                'content' => null
             ], 400);
         }
 
@@ -108,23 +108,31 @@ class WalletController extends Controller
             return WalletResource::make([
                 'status' => false,
                 'message' => 'Você já possui uma carteira com esse nome',
-                'wallet' => null
+                'content' => null
             ], 400);
         }
 
-        // Lógica para criar uma nova carteira
-        $newWallet = $request->validated();
-        $newWallet['user_id'] = USER_ID;
+        try {
+            // Lógica para criar uma nova carteira
+            $newWallet = $request->validated();
+            $newWallet['user_id'] = USER_ID;
 
-        // Criar a carteira
-        $wallet = Wallet::create($newWallet);
+            // Criar a carteira
+            $wallet = Wallet::create($newWallet);
 
-        // Retornar a carteira criada
-        return WalletResource::make([
-            'status' => true,
-            'message' => 'Carteira criada com sucesso',
-            'wallet' => $wallet
-        ], 201);
+            // Retornar a carteira criada
+            return WalletResource::make([
+                'status' => true,
+                'message' => 'Carteira criada com sucesso',
+                'content' => $wallet
+            ], 201);
+        } catch (\Exception $e) {
+            return WalletResource::make([
+                'status' => false,
+                'message' => 'Erro ao criar carteira',
+                'content' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -140,23 +148,32 @@ class WalletController extends Controller
         $wallet = Auth::user()->wallets->where('user_id', USER_ID)->where('id',$wallet)->first();
 
         // Verificar se a carteira pertence ao usuário logado
-        if(!$wallet || $wallet->user_id !== USER_ID) {
+        if(!$wallet) {
             return WalletResource::make([
                 'status' => false,
                 'message' => 'Carteira não encontrada',
-                'wallet' => null
+                'content' => null
             ], 404);
         }
 
-        // Lógica para atualizar uma transação específica da carteira especificada
-        $wallet->update($request->validated());
+        try {
+            // Lógica para atualizar uma transação específica da carteira especificada
+            $wallet->update($request->validated());
 
-        // Retornar a carteira atualizada
-        return WalletResource::make([
-            'status' => true,
-            'message' => 'Carteira atualizada com sucesso',
-            'wallet' => $wallet
-        ], 200);
+            // Retornar a carteira atualizada
+            return WalletResource::make([
+                'status' => true,
+                'message' => 'Carteira atualizada com sucesso',
+                'content' => $wallet
+            ], 200);
+        } catch (\Exception $e) {
+            return WalletResource::make([
+                'status' => false,
+                'message' => 'Erro ao atualizar carteira',
+                'content' => $e->getMessage()
+            ], 500);
+        }
+
     }
 
     /**
@@ -171,22 +188,30 @@ class WalletController extends Controller
         $wallet = Auth::user()->wallets->where('user_id', USER_ID)->where('id',$wallet)->first();
 
         // Lógica para deletar uma transação específica da carteira especificada
-        if(!$wallet || $wallet->user_id !== USER_ID) {
+        if(!$wallet) {
             return WalletResource::make([
                 'status' => false,
                 'message' => 'Carteira não encontrada',
-                'wallet' => null
+                'content' => null
             ], 404);
         }
 
-        // Deletar a carteira
-        $wallet->delete();
+        try {
+            // Deletar a carteira
+            $wallet->delete();
 
-        // Retornar a carteira deletada
-        return WalletResource::make([
-            'status' => true,
-            'message' => 'Carteira deletada com sucesso',
-            'wallet' => $wallet
-        ], 200);
+            // Retornar a carteira deletada
+            return WalletResource::make([
+                'status' => true,
+                'message' => 'Carteira deletada com sucesso',
+                'content' => null
+            ], 200);
+        } catch (\Exception $e) {
+            return WalletResource::make([
+                'status' => false,
+                'message' => 'Erro ao deletar carteira',
+                'content' => $e->getMessage()
+            ], 500);
+        }
     }
 }

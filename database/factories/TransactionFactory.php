@@ -24,9 +24,11 @@ class TransactionFactory extends Factory
             'wallet_id' => function () {
                 return \App\Models\Wallet::query()->inRandomOrder()->first()->id;
             },
-            'type' => $this->faker->randomElement(['income', 'expense']),
+            'type' => $this->faker->randomElement(['entrada', 'saida']),
             'amount' => $this->faker->randomFloat(2, 0, 10000),
-            'description' => $this->faker->sentence,
+            'status' => $this->faker->randomElement(['pendente', 'pago']),
+            'annotation' => $this->faker->sentence,
+            'due_date' => $this->faker->dateTimeBetween('-6 months', '+1 months')->format('Y-m-d'),
         ];
     }
 }

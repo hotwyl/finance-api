@@ -24,5 +24,5 @@ Route::prefix('/auth')->group(function () {
 Route::prefix('/')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('wallets', WalletController::class);
-    Route::apiResource('wallets.transactions', TransactionController::class);
+    Route::apiResource('transactions', TransactionController::class);
 });

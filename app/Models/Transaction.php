@@ -18,7 +18,11 @@ class Transaction extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'wallet_id', 'type', 'amount', 'description',
+        'wallet_id', 'type', 'description', 'amount', 'status', 'recurrence', 'period', 'installments', 'due_date', 'payment_date', 'annotation'
+    ];
+
+    protected $hidden = [
+        'wallet_id', 'created_at', 'updated_at', 'deleted_at',
     ];
 
     protected static function boot()

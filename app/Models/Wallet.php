@@ -30,7 +30,7 @@ class Wallet extends Model
         });
     }
 
-    // Relacionamento com o usuário
+    // Relacionamento com o wallet
     public function user()
     {
         return $this->belongsTo(User::class);

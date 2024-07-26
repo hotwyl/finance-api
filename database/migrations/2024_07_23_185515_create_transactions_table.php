@@ -14,9 +14,16 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('wallet_id');
-            $table->enum('type', ['income', 'expense']);
+            $table->enum('type', ['entrada', 'saida'])->default('saida');
+            $table->enum('description', ['salário','investimento','extra','financiamento','emprestimo','aluguel','luz','agua','internet','alimentação','transporte','educação','lazer','vestuario','poupança','outros']);
             $table->decimal('amount', 10, 2);
-            $table->string('description')->nullable();
+            $table->enum('status', ['pendente', 'pago', 'cancelado'])->default('pendente');
+            $table->boolean('recurrence')->nullable();
+            $table->enum('period', ['diario', 'semanal', 'quinzenal', 'mensal', 'bimestral', 'trimestral', 'semestral', 'anual'])->nullable();
+            $table->integer('installments')->nullable();
+            $table->date('due_date')->nullable();
+            $table->date('payment_date')->nullable();
+            $table->text('annotation')->nullable();
             $table->softDeletes();
             $table->timestamps();
 
