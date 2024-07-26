@@ -17,6 +17,8 @@ class Transaction extends Model
     public $incrementing = false; // Desabilita a auto-incrementação para UUIDs
     protected $primaryKey = 'id';
 
+    protected $table = 'transactions'; // Define o nome da tabela
+
     protected $fillable = [
         'wallet_id', 'type', 'description', 'amount', 'status', 'recurrence', 'period', 'installments', 'due_date', 'payment_date', 'annotation'
     ];

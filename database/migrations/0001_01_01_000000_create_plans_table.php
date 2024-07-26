@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wallets', function (Blueprint $table) {
+        Schema::create('plans', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('user_id');
             $table->string('name');
+            $table->decimal('price', 10, 2)->default(0);
+            $table->integer('qtd_users')->default(1);
+            $table->integer('qtd_wallets')->default(1);
+            $table->integer('qtd_transactions')->default(10);
+            $table->text('description')->nullable();
             $table->softDeletes();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wallets');
+        Schema::dropIfExists('plans');
     }
 };

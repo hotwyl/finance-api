@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Plan;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -25,7 +26,7 @@ class WalletController extends Controller
     public function __construct()
     {
         //constante definir quantidade de carteiras para cada usuario
-        define('WALLET_LIMIT', 1);
+        define('WALLET_LIMIT', Plan::where('id', Auth::user()->plan_id)->first()->qtd_wallets);
 
         //constante id usuario logado
         define('USER_ID', Auth::id());
@@ -98,7 +99,7 @@ class WalletController extends Controller
         if(Auth::user()->wallets->count() >= WALLET_LIMIT) {
             return WalletResource::make([
                 'status' => false,
-                'message' => 'Você já possui o limite de 1 carteiras',
+                'message' => 'Limite de carteiras atingido',
                 'content' => null
             ], 400);
         }
@@ -126,7 +127,7 @@ class WalletController extends Controller
                 'message' => 'Carteira criada com sucesso',
                 'content' => $wallet
             ], 201);
-            
+
         } catch (\Exception $e) {
             return WalletResource::make([
                 'status' => false,
@@ -155,6 +156,15 @@ class WalletController extends Controller
                 'message' => 'Carteira não encontrada',
                 'content' => null
             ], 404);
+        }
+
+        // verificar quantidade de carteiras
+        if(Auth::user()->wallets->count() >= WALLET_LIMIT) {
+            return WalletResource::make([
+                'status' => false,
+                'message' => 'Limite de carteiras atingido',
+                'content' => null
+            ], 400);
         }
 
         try {

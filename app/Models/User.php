@@ -20,6 +20,8 @@ class User extends Authenticatable
     public $incrementing = false; // Desabilita a auto-incrementação para UUIDs
     protected $primaryKey = 'id';
 
+    protected $table = 'users'; // Define o nome da tabela
+
     protected static function boot()
     {
         parent::boot();
@@ -28,6 +30,7 @@ class User extends Authenticatable
             $model->id = Uuid::uuid4()->toString(); // Gera um UUID para o novo usuário
         });
     }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -37,6 +40,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'plan_id',
     ];
 
     /**
@@ -47,9 +52,12 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verified_at',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'role',
     ];
-
-
 
     /**
      * Get the attributes that should be cast.
@@ -62,6 +70,12 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Relacionamento com os planos
+    public function plano()
+    {
+        return $this->hasOne(Plan::class);
     }
 
     // Relacionamento com as carteiras

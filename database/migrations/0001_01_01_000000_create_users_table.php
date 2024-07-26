@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('plan_id');
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at');
             $table->string('password');
             $table->rememberToken();
+            $table->string('role')->default('user');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

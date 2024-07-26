@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Plan;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -29,6 +30,9 @@ class TransactionController extends Controller
 
         //constante carteiras
         define('WALLETS', Auth::user()->wallets);
+
+        //constante definir quantidade de transações mensal para cada usuario
+        define('TRANSACTION_LIMIT', Plan::where('id', Auth::user()->plan_id)->first()->qtd_transactions);
     }
 
     /**
@@ -110,8 +114,19 @@ class TransactionController extends Controller
      */
     public function store(TransactionStoreRequest $request) : TransactionResource
     {
+        // Lógica para retornar uma transação específica da carteira especificada
         $carteira = (in_array($request->input('wallet_id'), WALLETS->pluck('id')->toArray())) ?  $request->input('wallet_id') : WALLETS->pluck('id')->first();
 
+        // verificar quantidade de carteiras
+        if(Transaction::whereIn('wallet_id', WALLETS->pluck('id'))->whereYear('due_date', date('Y', strtotime('now')))->whereMonth('due_date', date('m', strtotime('now')))->count() >= TRANSACTION_LIMIT) {
+            return TransactionResource::make([
+                'status' => false,
+                'message' => 'Limite de transações mensal atingido',
+                'content' => null
+            ], 400);
+        }
+
+        // Retornar carteira não encontrada
         if (!$carteira) {
             return TransactionResource::make([
                 'status' => false,
@@ -162,6 +177,15 @@ class TransactionController extends Controller
                 'message' => 'Transação não encontrada',
                 'content' => null
             ], 404);
+        }
+
+        // verificar quantidade de carteiras
+        if(Transaction::whereIn('wallet_id', WALLETS->pluck('id'))->whereYear('due_date', date('Y', strtotime('now')))->whereMonth('due_date', date('m', strtotime('now')))->count() >= TRANSACTION_LIMIT) {
+            return TransactionResource::make([
+                'status' => false,
+                'message' => 'Limite de transações mensal atingido',
+                'content' => null
+            ], 400);
         }
 
         try {

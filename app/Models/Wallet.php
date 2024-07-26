@@ -17,6 +17,8 @@ class Wallet extends Model
     public $incrementing = false; // Desabilita a auto-incrementação para UUIDs
     protected $primaryKey = 'id';
 
+    protected $table = 'wallets'; // Define o nome da tabela
+
     protected $fillable = ['name', 'user_id'];
 
     protected $hidden = ['user_id', 'created_at', 'updated_at', 'deleted_at'];
